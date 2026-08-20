@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+npr_index.db
+.DS_Store
+data/npr_utterances.csv
