@@ -90,5 +90,5 @@ This generates npr_index.db
 ### 2. Run the app
 
 ```bash
-python build_index.py
+python streamlit run app.py
 ```
