@@ -34,7 +34,7 @@ if "scroll_to_top" not in st.session_state:
 if "query_was_corrected" not in st.session_state:
     st.session_state.query_was_corrected = False
 
-DB_PATH = Path(__file__).parent / "npr_index.db"
+DB_PATH = Path(__file__).parent / "data" / "npr_index.db"
 
 
 @st.cache_resource
@@ -158,7 +158,7 @@ with st.expander("ℹ️ How to use this tool"):
 
 if not DB_PATH.exists():
     st.error(
-        f"Couldn't find `{DB_PATH.name}` next to this app. "
+        f"Couldn't find `{DB_PATH}`. "
         "Run the indexing step first to generate it."
     )
     st.stop()

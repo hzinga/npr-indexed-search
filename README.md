@@ -85,10 +85,10 @@ Place both downloaded CSVs into the `data/` folder before running `build_index.p
 python build_index.py
 ```
 
-This generates npr_index.db
+This generates `data/npr_index.db`.
 
 ### 2. Run the app
 
 ```bash
-python streamlit run app.py
+streamlit run app.py
 ```

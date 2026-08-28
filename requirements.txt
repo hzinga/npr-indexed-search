@@ -1,2 +1,4 @@
 streamlit
 streamlit-scroll-to-top==0.0.4
+pandas
+numpy

@@ -24,7 +24,7 @@ import numpy as np
 BASE = os.path.dirname(os.path.abspath(__file__))
 
 SOURCE_FILE = os.path.join(BASE, "data", "npr_utterances.csv")
-EPISODE_FILE = os.path.join(BASE, "data", "data/npr_episodes.csv")
+EPISODE_FILE = os.path.join(BASE, "data", "npr_episodes.csv")
 DB_PATH = os.path.join(BASE, "data", "npr_index.db")
 
 COLUMNS = {
@@ -350,15 +350,17 @@ def report(db_path):
     if hits == 0:
         print("  ^ index is empty. The 'rebuild' step did not run.")
 
-        # CHECK: SQLite affinity does not enforce types -- numpy scalars land as
-        # BLOBs without error. Verify what actually got stored.
-        print("\ncolumn types:")
-        for tbl, col in (("utterances", "turn_order"), ("utterances", "word_count"),
-                         ("episodes", "year"), ("episodes", "n_utterances")):
-            types = [r[0] for r in con.execute(f"SELECT DISTINCT typeof({col}) FROM {tbl}")]
-            print(f"  {tbl}.{col}: {types}")
-            if any(t not in ("integer", "null") for t in types):
-                print("    ^ not stored as INTEGER — numeric comparisons will fail.")
+    # CHECK: SQLite affinity does not enforce types -- numpy scalars land as
+    # BLOBs without error. Verify what actually got stored. This runs on every
+    # build, not just empty ones: a wrong column type is exactly the kind of
+    # fault that leaves search working while numeric filters silently fail.
+    print("\ncolumn types:")
+    for tbl, col in (("utterances", "turn_order"), ("utterances", "word_count"),
+                     ("episodes", "year"), ("episodes", "n_utterances")):
+        types = [r[0] for r in con.execute(f"SELECT DISTINCT typeof({col}) FROM {tbl}")]
+        print(f"  {tbl}.{col}: {types}")
+        if any(t not in ("integer", "null") for t in types):
+            print("    ^ not stored as INTEGER — numeric comparisons will fail.")
 
     con.close()
 
