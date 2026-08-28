@@ -4,3 +4,4 @@ __pycache__/
 npr_index.db
 .DS_Store
 data/npr_utterances.csv
+.idea/
