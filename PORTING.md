@@ -2,7 +2,7 @@
 
 The NPR Transcript Search is a prototype for an eventual AVP Word Search tool on
 the Data Discovery Dashboard. This document maps what changes need to be made to this repo
-in order to adapt it for the AVP.
+in order to adapt it for the AVP. Written with help of Claude.
 
 ## The AVP data
 
@@ -66,7 +66,7 @@ own commit than folded into the port.
 ### Reading Excel
 
 `read_any` ([lines 66–75](https://github.com/hzinga/npr-indexed-search/blob/c6d7af92215a27437a1bbaf4dbc8c2053abdc670/build_index.py#L66-L75))
-handles CSV, JSON, and JSONL. Add an Excel branch:
+handles CSV, JSON, and JSONL. Add an Excel branch to read the metadata spreadsheet:
 
 ```python
 if path.endswith((".xlsx", ".xlsm")):
@@ -136,7 +136,7 @@ success, and every search returns nothing. Keep the atomic file swap.
 ### report
 
 [Lines 279–363](https://github.com/hzinga/npr-indexed-search/blob/c6d7af92215a27437a1bbaf4dbc8c2053abdc670/build_index.py#L279-L363)
-run integrity checks after each build. Four to confirm on the first real run:
+run integrity checks after each build:
 
 - **FTS5 exists.** `check_fts5` ([lines 50–61](https://github.com/hzinga/npr-indexed-search/blob/c6d7af92215a27437a1bbaf4dbc8c2053abdc670/build_index.py#L50-L61)) fails at startup rather than midway through a build. Run it before anything else on the server.
 - **Zero orphan turns.** Turns whose interview id has no metadata row. Nonzero means those interviews vanish under any filter while still appearing in unfiltered searches.
@@ -215,15 +215,9 @@ Both regex functions can then go, along with the `pattern` value threaded throug
 ([lines 372](https://github.com/hzinga/npr-indexed-search/blob/c6d7af92215a27437a1bbaf4dbc8c2053abdc670/app.py#L372)
 and [463](https://github.com/hzinga/npr-indexed-search/blob/c6d7af92215a27437a1bbaf4dbc8c2053abdc670/app.py#L463)).
 
-Also update the help text
-([lines 142–157](https://github.com/hzinga/npr-indexed-search/blob/c6d7af92215a27437a1bbaf4dbc8c2053abdc670/app.py#L142-L157)),
-which currently promises whole-word matching.
-
 ## Adding a metadata filter
 
-NPR has three filters — program, speaker type, year. Each one touches six places, and
-the pattern is the same for any `simplified_data` column, so adding or removing filters
-later is mechanical rather than structural.
+NPR has three filters — program, speaker type, year. 
 
 In `build_index.py`:
 
@@ -237,10 +231,5 @@ In `app.py`:
 5. the sidebar ([lines 306–313](https://github.com/hzinga/npr-indexed-search/blob/c6d7af92215a27437a1bbaf4dbc8c2053abdc670/app.py#L306-L313)) — an `st.multiselect`, and a matching `session_state` key
 6. `run_search` — an `if` block adding `AND m.<column> IN (...)` to the SQL
 
-Trace the existing `program` filter through those six points to see the shape before
-adding the first new one.
-
-There are important questions to consider when thinking of which variables to include for metadata
-filtering. Starting with a handful of variables would make the most sense when initially trying to
-adapt, but ideally, researchers would be able to filter on all of the variables in `simplified_data`
-that they can filter on in the Data Discovery Dashboard.
+It would be best to initially start with a few of the basic variables available - age, region, gender, etc. Then expand
+this to all metadata we have available on interviewees.
